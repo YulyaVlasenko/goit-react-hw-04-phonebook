@@ -1,12 +1,12 @@
 
-import React, { useEffect, useState } from "react";
-import ContactForm from "./ContactForm/ContactForm";
-import { Section } from "./Section/Section";
-import ContactList from "./ContactList/ContactList";
-import Filter from "./Filter/Filter";
+import React, { useState, useEffect } from 'react';
+import ContactForm from './ContactForm/ContactForm';
+import { Section } from './Section/Section';
+import ContactList from './ContactList/ContactList';
+import Filter from './Filter/Filter';
 import toast, { Toaster } from 'react-hot-toast';
 
-const App = () => {
+function App() {
   const [contacts, setContacts] = useState(null);
   const [filter, setFilter] = useState('');
 
@@ -14,63 +14,63 @@ const App = () => {
     const savedList = localStorage.getItem('contacts');
     if (savedList) {
       setContacts(JSON.parse(savedList));
+    } else {
+      setContacts([]);
     }
   }, []);
 
   useEffect(() => {
-    if (contacts) {
-      localStorage.setItem('contacts', JSON.stringify(contacts));
-      if (contacts.length > 0) {
-        toast.success('Contact operation successful!');
-      }
-    }
+    if (!contacts) return;
+
+    localStorage.setItem('contacts', JSON.stringify(contacts));
   }, [contacts]);
 
   const createContact = (contact) => {
-    setContacts((prevContacts) => {
-      if (prevContacts === null) {
-        return [contact];
-      } else {
-        return [...prevContacts, contact];
-      }
-    });
+    setContacts((prevContacts) => [...(prevContacts || []), contact]);
+    toast.success('Create contact successfully!');
   };
 
-  const handleChangeFilter = (e) => {
-    setFilter(e.target.value);
+  const getListOfContacts = () => {
+    if (!contacts) return [];
+    const filterValue = filter.toLowerCase();
+    return contacts.filter((contact) =>
+      contact.name.toLowerCase().includes(filterValue)
+    );
   };
 
-  const filteredContacts = contacts
-    ? contacts.filter((contact) =>
-        contact.name.toLowerCase().includes(filter.toLowerCase())
-      )
-    : [];
+  const handleChangeFilter = ({ target: { value } }) => {
+    setFilter(value);
+  };
 
   const deleteContact = (contactForDelete) => {
     setContacts((prevContacts) =>
       prevContacts.filter((contact) => contact.id !== contactForDelete)
     );
+    toast.error('Delete contact successfully!');
   };
+
+  const listOfContacts = getListOfContacts();
+  const isContactListEmpty = listOfContacts.length === 0;
 
   return (
     <>
-      <Section title='Phonebook'>
+      <Section title="Phonebook">
         <ContactForm createContact={createContact} contacts={contacts} />
       </Section>
-      
-      <Section title='Contacts'>
+
+      <Section title="Contacts">
         <Filter
-          title='Find contacts by name'
+          title="Find contacts by name"
           handleChangeFilter={handleChangeFilter}
           value={filter}
         />
-        {filteredContacts.length > 0 && (
-          <ContactList contacts={filteredContacts} deleteContact={deleteContact} />
+        {!isContactListEmpty && (
+          <ContactList contacts={listOfContacts} deleteContact={deleteContact} />
         )}
       </Section>
       <Toaster />
     </>
   );
-};
+}
 
 export default App;
