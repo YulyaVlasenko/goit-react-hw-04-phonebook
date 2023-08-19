@@ -7,28 +7,22 @@ import Filter from './Filter/Filter';
 import toast, { Toaster } from 'react-hot-toast';
 
 function App() {
-  const [contacts, setContacts] = useState(null);
+
+  const [contacts, setContacts] = useState(() => {
+  const savedList = localStorage.getItem('contacts');
+  return savedList ? JSON.parse(savedList) : [];
+  });
   const [filter, setFilter] = useState('');
 
-  useEffect(() => {
-    const savedList = localStorage.getItem('contacts');
-    if (savedList) {
-      setContacts(JSON.parse(savedList));
-    } else {
-      setContacts([]);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!contacts) return;
-
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
+useEffect(() => {
+  localStorage.setItem('contacts', JSON.stringify(contacts));
+}, [contacts]);
 
   const createContact = (contact) => {
-    setContacts((prevContacts) => [...(prevContacts || []), contact]);
+    setContacts((prevContacts) => [...prevContacts, contact]);
     toast.success('Create contact successfully!');
   };
+
 
   const getListOfContacts = () => {
     if (!contacts) return [];

@@ -7,7 +7,7 @@ import React from 'react';
 const ContactList = ({ contacts, deleteContact }) => {
   return (
      <ul>
-              {contacts && contacts.map(contact => {
+              {contacts.map(contact => {
                 return (
                   <Contact
                     key={contact.id}

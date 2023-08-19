@@ -19,7 +19,7 @@ const ContactForm = ({ createContact, contacts }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         
-        const isExisting = contacts && contacts.find(contact => contact.name === name);
+        const isExisting = contacts.find(contact => contact.name === name);
         if (isExisting) {
             toast.error(`${name} is already in contacts.`);
             return;
